@@ -15,7 +15,7 @@ python_speech_features
 librosa
 
 matplotlib
-libtorrent
+#libtorrent
 tensorlayer
 # cv,cv2 #  deprecated, we use matplotlib.pyplot now
 # python-tk   only if you want to visualize speech recognition

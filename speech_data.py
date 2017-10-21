@@ -31,7 +31,7 @@ DATA_DIR = 'data/'
 pcm_path = "data/spoken_numbers_pcm/" # 8 bit
 wav_path = "data/spoken_numbers_wav/" # 16 bit s16le
 path = pcm_path
-CHUNK = 4096
+snore_path = "data/snore/"
 test_fraction=0.1 # 10% of data for test / verification
 
 # http://pannous.net/files/spoken_numbers_pcm.tar
@@ -163,7 +163,7 @@ def get_speakers(path=pcm_path):
 	print(len(speakers)," speakers: ",speakers)
 	return speakers
 
-def load_wav_file(name):
+def load_wav_file(name,CHUNK):
 	f = wave.open(name, "rb")
 	# print("loading %s"%name)
 	chunk = []
@@ -250,6 +250,26 @@ def mfcc_batch_generator(batch_size=10, source=Source.DIGIT_WAVES, target=Target
 				batch_features = []  # Reset for next batch
 				labels = []
 
+def wave_batch_snore(batch_size):
+    batch_waves = []
+    labels = []
+
+    files = os.listdir(snore_path)
+    while True:
+        shuffle(files)
+        print("loaded batch of %d files" % len(files))
+        for wav in files:
+            if not wav.endswith(".wav"): continue
+            print(wav)
+            if wav.startswith("nosnore") : labels.append([1,0])
+            else : labels.append([0,1])
+            chunk = load_wav_file(snore_path + wav,70000)
+            batch_waves.append(chunk)
+            # batch_waves.append(chunks[input_width])
+            if len(batch_waves) >= batch_size:
+                yield batch_waves, labels
+                batch_waves = []  # Reset for next batch
+                labels = []
 
 # If you set dynamic_pad=True when calling tf.train.batch the returned batch will be automatically padded with 0s. Handy! A lower-level option is to use tf.PaddingFIFOQueue.
 # only apply to a subset of all images at one time
@@ -269,7 +289,7 @@ def wave_batch_generator(batch_size=10,source=Source.DIGIT_WAVES,target=Target.d
 			elif target==Target.speaker: labels.append(one_hot_from_item(speaker(wav), speakers))
 			elif target==Target.first_letter:  label=dense_to_one_hot((ord(wav[0]) - 48) % 32,32)
 			else: raise Exception("todo : Target.word label!")
-			chunk = load_wav_file(path+wav)
+			chunk = load_wav_file(path+wav,4096)
 			batch_waves.append(chunk)
 			# batch_waves.append(chunks[input_width])
 			if len(batch_waves) >= batch_size:
