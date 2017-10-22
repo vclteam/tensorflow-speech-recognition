@@ -288,10 +288,11 @@ def wave_batch_snore(batch_size):
     files = os.listdir(snore_path)
     while True:
         shuffle(files)
-        print("loaded batch of %d files" % len(files))
+        cnt = 0;
+
         for wav in files:
             if not wav.endswith(".wav"): continue
-            print(wav)
+            cnt = cnt + 1
             if wav.startswith("nosnore"):
                 labels.append([1, 0])
             else:
@@ -300,9 +301,11 @@ def wave_batch_snore(batch_size):
             batch_waves.append(chunk)
             # batch_waves.append(chunks[input_width])
             if len(batch_waves) >= batch_size:
+                print("loaded batch of %d files" % cnt)
                 yield batch_waves, labels
                 batch_waves = []  # Reset for next batch
                 labels = []
+                cnt = 0;
 
 
 # If you set dynamic_pad=True when calling tf.train.batch the returned batch will be automatically padded with 0s. Handy! A lower-level option is to use tf.PaddingFIFOQueue.

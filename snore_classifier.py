@@ -15,10 +15,11 @@ def validateWav(demo_file):
     result = model.predict([demo])
     result = numpy.argmax(result)
     print("predicted digit for %s : result = %d " % (demo_file, result))
+    return result
 
 
 
-batch=speech_data.wave_batch_snore(120)
+batch=speech_data.wave_batch_snore(300)
 X,Y=next(batch)
 
 
@@ -30,18 +31,21 @@ tflearn.init_graph(num_cores=8, gpu_memory_fraction=0.5)
 net = tflearn.input_data(shape=[None, 140000])
 net = tflearn.fully_connected(net, 248)
 net = tflearn.fully_connected(net, 64)
+net = tflearn.fully_connected(net, 64)
 net = tflearn.dropout(net, 0.5)
 net = tflearn.fully_connected(net, number_classes, activation='softmax')
 net = tflearn.regression(net, optimizer='adam', loss='categorical_crossentropy')
 
 model = tflearn.DNN(net)
 for i in range(1,500) :
-    model.fit(X, Y,n_epoch=25,show_metric=True,snapshot_step=100)
+    model.fit(X, Y,n_epoch=25,show_metric=True,snapshot_step=100,)
     X, Y = next(batch)
-    validateWav("nosnore3.wav")
-    validateWav("nosnore4.wav")
-    validateWav("snore1.wav")
-    validateWav("snore2.wav")
+    r1=validateWav("nosnore3.wav")
+    r2 =validateWav("nosnore4.wav")
+    r3 =validateWav("snore1.wav")
+    r4 =validateWav("snore2.wav")
+    total = r1+r2+r3+r4
+    if total==2 : input("found?")
 
 model.save("model/snore")
 model.load("model/snore")
