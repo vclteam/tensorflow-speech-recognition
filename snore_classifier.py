@@ -54,12 +54,18 @@ for i in range(1,500) :
 
     model.fit(X, Y,validation_set=(Xtest,Ytest),n_epoch=15,show_metric=True,snapshot_step=100,)
 
+    r1=validateWav("nosnore1.wav")
+    r2 =validateWav("nosnore2.wav")
     r1=validateWav("nosnore3.wav")
     r2 =validateWav("nosnore4.wav")
+
     r3 =validateWav("snore1.wav")
     r4 =validateWav("snore2.wav")
+    r3 =validateWav("snore3.wav")
+    r4 =validateWav("snore4.wav")
+
     total = r1+r2+r3+r4
-    if total==2 : input("found?")
+    #if total==2 : input("found?")
 
 model.save("model/snore")
 model.load("model/snore")
