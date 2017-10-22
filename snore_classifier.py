@@ -30,11 +30,11 @@ tflearn.init_graph(num_cores=8, gpu_memory_fraction=0.5)
 
 net = tflearn.input_data(shape=[None, 140000])
 net = tflearn.fully_connected(net, 248)
-net = tflearn.fully_connected(net, 64)
+net = tflearn.normalization.batch_normalization(net)
 net = tflearn.fully_connected(net, 64)
 net = tflearn.dropout(net, 0.5)
 net = tflearn.fully_connected(net, number_classes, activation='softmax')
-net = tflearn.regression(net, optimizer='adam', loss='categorical_crossentropy')
+net = tflearn.regression(net, optimizer='adam', loss='categorical_crossentropy',learning_rate=0.0001)
 
 model = tflearn.DNN(net)
 for i in range(1,500) :
