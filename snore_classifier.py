@@ -13,8 +13,8 @@ import numpy
 mfcc=True
 
 def validateWav(demo_file):
-    demo = speech_data.load_wav_file(speech_data.snore_train_path + demo_file,140000,1,mfcc)
-    result = model.predict([demo])
+    demoData = speech_data.load_wav_file(speech_data.snore_train_path + demo_file,140000,1,mfcc)
+    result = model.predict([demoData])
     result = numpy.argmax(result)
     print("predicted digit for %s : result = %d " % (demo_file, result))
     return result
@@ -22,7 +22,7 @@ def validateWav(demo_file):
 
 
 
-batch=speech_data.wave_batch_snore(300,mfcc)
+batch=speech_data.wave_batch_snore(100,mfcc)
 X,Y=next(batch)
 
 
@@ -36,8 +36,11 @@ if mfcc :
     height = 200
     net = tflearn.input_data(shape=[None, width,height])
     net = tflearn.lstm(net, 128*4,dropout=0.5)
-    net = tflearn.fully_connected(net, number_classes,activation='softmax')
-    net = tflearn.regression(net, optimizer='adam', loss='categorical_crossentropy',learning_rate=0.0001)
+    net = tflearn.fully_connected(net, 256,activation='softmax')
+    net = tflearn.fully_connected(net, 128, activation='softmax')
+    net = tflearn.fully_connected(net, 128, activation='softmax')
+    net = tflearn.fully_connected(net, 64, activation='softmax')
+    net = tflearn.regression(net, optimizer='adam', loss='categorical_crossentropy',learning_rate=0.001)
 else :
     net = tflearn.input_data(shape=[None, 140000])
     net = tflearn.fully_connected(net, 248)
