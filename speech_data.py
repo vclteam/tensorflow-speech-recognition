@@ -183,26 +183,31 @@ def get_speakers(path=pcm_path):
     return speakers
 
 
-def load_wav_file(name, CHUNK,append):
-    f = wave.open(name, "rb")
-    # print("loading %s"%name)
-    chunk = []
-    data0 = f.readframes(CHUNK)
-    while data0:  # f.getnframes()
-        # data=numpy.fromstring(data0, dtype='float32')
-        # data = numpy.fromstring(data0, dtype='uint16')
-        data = numpy.fromstring(data0, dtype='uint8')
-        data = (data + 128) / 255.  # 0-1 for Better convergence
-        # chunks.append(data)
-        chunk.extend(data)
-        data0 = f.readframes(CHUNK)
-    # finally trim:
-    chunk = chunk[0:CHUNK * 2]  # should be enough for now -> cut
-    if append==1 :chunk.extend(numpy.zeros(CHUNK * 2 - len(chunk)))  # fill with padding 0's
-    else : chunk = numpy.insert(chunk,0,numpy.zeros(CHUNK * 2 - len(chunk)))  # fill with prepadding 0's
 
-    # print("%s loaded"%name)
+def load_wav_file(name, CHUNK,append,usemfcc):
+    # print("loading %s"%name)
+    if usemfcc :
+        wave, sr = librosa.load(name, mono=True)
+        mfcc = librosa.feature.mfcc(wave, sr)
+        chunk = np.pad(mfcc, ((0, 0), (0, 200 - len(mfcc[0]))), mode='constant', constant_values=0)
+    else :
+        f = wave.open(name, "rb")
+        chunk = []
+        data0 = f.readframes(CHUNK)
+        while data0:  # f.getnframes()
+            data = numpy.fromstring(data0, dtype='uint8')
+            data = (data + 128) / 255.  # 0-1 for Better convergence
+
+            chunk.extend(data)
+            data0 = f.readframes(CHUNK)
+        # finally trim:
+        chunk = chunk[0:CHUNK * 2]  # should be enough for now -> cut
+        if append==1 :chunk.extend(numpy.zeros(CHUNK * 2 - len(chunk)))  # fill with padding 0's
+        else : chunk = numpy.insert(chunk,0,numpy.zeros(CHUNK * 2 - len(chunk)))  # fill with prepadding 0's
+
+
     return chunk
+
 
 
 def spectro_batch_generator(batch_size=10, width=64, source_data=Source.DIGIT_SPECTROS, target=Target.digits):
@@ -280,7 +285,7 @@ def mfcc_batch_generator(batch_size=10, source=Source.DIGIT_WAVES, target=Target
                 labels = []
 
 
-def wave_batch_snore(batch_size):
+def wave_batch_snore(batch_size,usemfcc):
     maybe_download("https://snorestorage.blob.core.windows.net/audio/snoreaudio.zip", DATA_DIR)
     batch_waves = []
     labels = []
@@ -297,7 +302,7 @@ def wave_batch_snore(batch_size):
                 labels.append([1, 0])
             else:
                 labels.append([0, 1])
-            chunk = load_wav_file(snore_path + wav, 70000,random.randint(0,1))
+            chunk = load_wav_file(snore_path + wav, 140000, random.randint(0, 1), usemfcc)
             batch_waves.append(chunk)
             # batch_waves.append(chunks[input_width])
             if len(batch_waves) >= batch_size:
