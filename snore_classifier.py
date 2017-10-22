@@ -36,10 +36,8 @@ if mfcc :
     height = 200
     net = tflearn.input_data(shape=[None, width,height])
     net = tflearn.lstm(net, 128*4,dropout=0.5)
-    net = tflearn.fully_connected(net, 256,activation='softmax')
-    net = tflearn.fully_connected(net, 128, activation='softmax')
-    net = tflearn.fully_connected(net, 128, activation='softmax')
-    net = tflearn.fully_connected(net, 64, activation='softmax')
+    net = tflearn.fully_connected(net, 128)
+    net = tflearn.fully_connected(net, number_classes)
     net = tflearn.regression(net, optimizer='adam', loss='categorical_crossentropy',learning_rate=0.001)
 else :
     net = tflearn.input_data(shape=[None, 140000])
