@@ -34,18 +34,153 @@ for i in range(len(data)) :
 
 print("start learn")
 net = tflearn.input_data(shape=[None,classes])
-net = tflearn.fully_connected(net,64,activation="ReLU")
+net = tflearn.fully_connected(net,256,activation="ReLU")
+net = tflearn.fully_connected(net,1024,activation="ReLU")
 net = tflearn.fully_connected(net,classes,activation="softmax")
 net = tflearn.regression(net)
 
 model = tflearn.DNN(net);
-model.fit(labels,data,n_epoch=100,show_metric=True)
+model.fit(labels,data,n_epoch=500,show_metric=True)
 model.save("model\lyrick.tyl")
 
 id1=98
 id2=109
 id3=108
 
-rc = numpy.argmax(model.predict([genData(id1,id2,id3)]))
-
-print(rc)
+rc =  numpy.argmax(model.predict([genData(id1,id2,id3)]))
+print(dict[rc])
+id1=id2
+id2=id3
+id3=rc
+rc =  numpy.argmax(model.predict([genData(id1,id2,id3)]))
+print(dict[rc])
+id1=id2
+id2=id3
+id3=rc
+rc =  numpy.argmax(model.predict([genData(id1,id2,id3)]))
+print(dict[rc])
+id1=id2
+id2=id3
+id3=rc
+rc =  numpy.argmax(model.predict([genData(id1,id2,id3)]))
+print(dict[rc])
+id1=id2
+id2=id3
+id3=rc
+rc =  numpy.argmax(model.predict([genData(id1,id2,id3)]))
+print(dict[rc])
+id1=id2
+id2=id3
+id3=rc
+rc =  numpy.argmax(model.predict([genData(id1,id2,id3)]))
+print(dict[rc])
+id1=id2
+id2=id3
+id3=rc
+rc =  numpy.argmax(model.predict([genData(id1,id2,id3)]))
+print(dict[rc])
+id1=id2
+id2=id3
+id3=rc
+rc =  numpy.argmax(model.predict([genData(id1,id2,id3)]))
+print(dict[rc])
+id1=id2
+id2=id3
+id3=rc
+rc =  numpy.argmax(model.predict([genData(id1,id2,id3)]))
+print(dict[rc])
+id1=id2
+id2=id3
+id3=rc
+rc =  numpy.argmax(model.predict([genData(id1,id2,id3)]))
+print(dict[rc])
+id1=id2
+id2=id3
+id3=rc
+rc =  numpy.argmax(model.predict([genData(id1,id2,id3)]))
+print(dict[rc])
+id1=id2
+id2=id3
+id3=rc
+rc =  numpy.argmax(model.predict([genData(id1,id2,id3)]))
+print(dict[rc])
+id1=id2
+id2=id3
+id3=rc
+rc =  numpy.argmax(model.predict([genData(id1,id2,id3)]))
+print(dict[rc])
+id1=id2
+id2=id3
+id3=rc
+rc =  numpy.argmax(model.predict([genData(id1,id2,id3)]))
+print(dict[rc])
+id1=id2
+id2=id3
+id3=rc
+rc =  numpy.argmax(model.predict([genData(id1,id2,id3)]))
+print(dict[rc])
+id1=id2
+id2=id3
+id3=rc
+rc =  numpy.argmax(model.predict([genData(id1,id2,id3)]))
+print(dict[rc])
+id1=id2
+id2=id3
+id3=rc
+rc =  numpy.argmax(model.predict([genData(id1,id2,id3)]))
+print(dict[rc])
+id1=id2
+id2=id3
+id3=rc
+rc =  numpy.argmax(model.predict([genData(id1,id2,id3)]))
+print(dict[rc])
+id1=id2
+id2=id3
+id3=rc
+rc =  numpy.argmax(model.predict([genData(id1,id2,id3)]))
+print(dict[rc])
+id1=id2
+id2=id3
+id3=rc
+rc =  numpy.argmax(model.predict([genData(id1,id2,id3)]))
+print(dict[rc])
+id1=id2
+id2=id3
+id3=rc
+rc =  numpy.argmax(model.predict([genData(id1,id2,id3)]))
+print(dict[rc])
+id1=id2
+id2=id3
+id3=rc
+rc =  numpy.argmax(model.predict([genData(id1,id2,id3)]))
+print(dict[rc])
+id1=id2
+id2=id3
+id3=rc
+rc =  numpy.argmax(model.predict([genData(id1,id2,id3)]))
+print(dict[rc])
+id1=id2
+id2=id3
+id3=rc
+rc =  numpy.argmax(model.predict([genData(id1,id2,id3)]))
+print(dict[rc])
+id1=id2
+id2=id3
+id3=rc
+rc =  numpy.argmax(model.predict([genData(id1,id2,id3)]))
+print(dict[rc])
+id1=id2
+id2=id3
+id3=rc
+rc =  numpy.argmax(model.predict([genData(id1,id2,id3)]))
+print(dict[rc])
+id1=id2
+id2=id3
+id3=rc
+rc =  numpy.argmax(model.predict([genData(id1,id2,id3)]))
+print(dict[rc])
+id1=id2
+id2=id3
+id3=rc
+rc =  numpy.argmax(model.predict([genData(id1,id2,id3)]))
+print(dict[rc])
