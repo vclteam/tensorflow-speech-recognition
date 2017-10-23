@@ -24,7 +24,7 @@ def validateWav(demo_file):
 
 batch=speech_data.wave_batch_snore(64,mfcc)
 
-learning_rate = 0.00001
+learning_rate = 0.0001
 number_classes=2 # Digits
 
 # Classification
@@ -34,8 +34,8 @@ if mfcc :
     width = 20;
     height = 200
     net = tflearn.input_data(shape=[None, width,height])
-    net = tflearn.lstm(net, 128*4,dropout=0.5)
-    net = tflearn.fully_connected(net, 128)
+    net = tflearn.lstm(net, 1024,return_seq=True)
+    net = tflearn.lstm(net, 64, dropout=0.5)
     net = tflearn.fully_connected(net, number_classes)
     net = tflearn.regression(net, optimizer='adam', loss='categorical_crossentropy',learning_rate=learning_rate)
 else :
@@ -52,7 +52,7 @@ for i in range(1,500) :
     X, Y = next(batch)
     Xtest, Ytest = next(batch)
 
-    model.fit(X, Y,validation_set=(Xtest,Ytest),n_epoch=15,show_metric=True,snapshot_step=100,)
+    model.fit(X, Y,validation_set=(Xtest,Ytest),n_epoch=25,show_metric=True,snapshot_step=100,)
 
     r1=validateWav("nosnore1.wav")
     r2 =validateWav("nosnore2.wav")
