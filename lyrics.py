@@ -4,7 +4,7 @@ import numpy
 lines = tuple(open("data/dict.txt"))
 
 
-classes = 6000
+classes = len(lines)
 data,labels = tflearn.data_utils.load_csv("data/alllyrics3.txt",target_column=0)
 
 
@@ -34,13 +34,13 @@ for i in range(len(data)) :
 
 print("start learn")
 net = tflearn.input_data(shape=[None,classes])
-net = tflearn.fully_connected(net,256,activation="ReLU")
-net = tflearn.fully_connected(net,1024,activation="ReLU")
+net = tflearn.embedding(net,input_dim=20000,output_dim=128)
+net = tflearn.dropout(net,0.5)
 net = tflearn.fully_connected(net,classes,activation="softmax")
 net = tflearn.regression(net)
 
 model = tflearn.DNN(net);
-model.fit(labels,data,n_epoch=500,show_metric=True)
+model.fit(labels,data,n_epoch=100,show_metric=True)
 model.save("model\lyrick.tyl")
 
 id1=98
