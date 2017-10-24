@@ -7,12 +7,8 @@ from six.moves import urllib
 import tflearn
 from tflearn.data_utils import *
 
-path = "data/shakespeare_input.txt"
+path = "data/alllyricsheb.txt"
 char_idx_file = 'char_idx.pickle'
-
-if not os.path.isfile(path):
-    urllib.request.urlretrieve(
-        "https://raw.githubusercontent.com/tflearn/tflearn.github.io/master/resources/shakespeare_input.txt", path)
 
 maxlen = 25
 
