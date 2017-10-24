@@ -34,7 +34,7 @@ for i in range(len(data)) :
 
 print("start learn")
 net = tflearn.input_data(shape=[None,classes])
-net = tflearn.embedding(net,input_dim=20000,output_dim=128)
+net = tflearn.embedding(net,input_dim=2000,output_dim=128)
 net = tflearn.dropout(net,0.5)
 net = tflearn.fully_connected(net,classes,activation="softmax")
 net = tflearn.regression(net)
