@@ -1,14 +1,7 @@
 #!/usr/bin/env python
 #!/usr/bin/env PYTHONIOENCODING="utf-8" python
 import tflearn
-import pyaudio
 import speech_data
-import numpy
-
-# Simple spoken digit recognition demo, with 98% accuracy in under a minute
-
-# Training Step: 544  | total loss: 0.15866
-# | Adam | epoch: 034 | loss: 0.15866 - acc: 0.9818 -- iter: 0000/1000
 
 mfcc=True
 
@@ -39,10 +32,8 @@ if mfcc :
     width = 20;
     height = 200
     net = tflearn.input_data(shape=[None, width,height])
-    net = tflearn.lstm(net, 128,name="lstm2")
-    net = tflearn.dropout(net, 0.5,name="1lstm2")
-    net = tflearn.lstm(net, 64,name="lstm2")
-    net = tflearn.dropout(net, 0.5,name="dlstm1")
+    net = tflearn.lstm(net, 128,name="lstm2",return_seq=True ,activation="Tanh")
+    net = tflearn.lstm(net, 64,name="lstm2",dropout=0.5,activation="Tanh")
     net = tflearn.fully_connected(net, number_classes,activation="ReLU")
     net = tflearn.regression(net, optimizer='adam', loss='categorical_crossentropy',learning_rate=learning_rate)
 else :
