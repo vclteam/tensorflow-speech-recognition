@@ -186,9 +186,10 @@ def get_speakers(path=pcm_path):
 
 def load_wav_file(name, CHUNK,append,usemfcc):
     # print("loading %s"%name)
+
     if usemfcc :
-        wave, sr = librosa.load(name, mono=True)
-        mfcc = librosa.feature.mfcc(wave, sr)
+        wave1, sr = librosa.load(name, mono=True,sr=16000)
+        mfcc = librosa.feature.mfcc(wave1, sr)
         chunk = np.pad(mfcc, ((0, 0), (0, 200 - len(mfcc[0]))), mode='constant', constant_values=0)
     else :
         f = wave.open(name, "rb")

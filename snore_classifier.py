@@ -23,7 +23,8 @@ def validateWav(demo_file):
 
 
 
-batch=speech_data.wave_batch_snore(64,mfcc)
+batch=speech_data.wave_batch_snore(256,mfcc)
+testbatch=speech_data.wave_batch_snore(32,mfcc)
 
 learning_rate = 0.0001
 number_classes=2 # Digits
@@ -35,9 +36,9 @@ if mfcc :
     width = 20;
     height = 200
     net = tflearn.input_data(shape=[None, width,height])
-    net = tflearn.lstm(net, 128,return_seq=True)
+    net = tflearn.lstm(net, 128,return_seq=True,name="lstm2")
     net = tflearn.dropout(net, 0.5)
-    net = tflearn.lstm(net, 64)
+    net = tflearn.lstm(net, 64,name="lstm2")
     net = tflearn.dropout(net, 0.5)
     net = tflearn.fully_connected(net, number_classes,activation="ReLU")
     net = tflearn.regression(net, optimizer='adam', loss='categorical_crossentropy',learning_rate=learning_rate)
@@ -53,7 +54,7 @@ else :
 model = tflearn.DNN(net)
 for i in range(1,500) :
     X, Y = next(batch)
-    Xtest, Ytest = next(batch)
+    Xtest, Ytest = next(testbatch)
 
     res = model.fit(X, Y,validation_set=(Xtest,Ytest),n_epoch=25,show_metric=True,snapshot_step=100)
 
