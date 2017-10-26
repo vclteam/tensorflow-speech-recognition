@@ -15,9 +15,10 @@ mfcc=True
 def validateWav(demo_file):
     demoData = speech_data.load_wav_file(speech_data.snore_train_path + demo_file,140000,1,mfcc)
     result = model.predict([demoData])
-    result = numpy.argmax(result)
-    print("predicted digit for %s : result = %d " % (demo_file, result))
-    return result
+    if (result[1][1]>0.6) : rc =  1
+    rc = 0
+    print demo_file+" "+rc
+    return rc
 
 
 
@@ -34,7 +35,7 @@ if mfcc :
     width = 20;
     height = 200
     net = tflearn.input_data(shape=[None, width,height])
-    net = tflearn.lstm(net, 1024,return_seq=True)
+    net = tflearn.lstm(net, 128,return_seq=True)
     net = tflearn.lstm(net, 64, dropout=0.5)
     net = tflearn.fully_connected(net, number_classes)
     net = tflearn.regression(net, optimizer='adam', loss='categorical_crossentropy',learning_rate=learning_rate)
@@ -52,20 +53,19 @@ for i in range(1,500) :
     X, Y = next(batch)
     Xtest, Ytest = next(batch)
 
-    model.fit(X, Y,validation_set=(Xtest,Ytest),n_epoch=25,show_metric=True,snapshot_step=100,)
+    res = model.fit(X, Y,validation_set=(Xtest,Ytest),n_epoch=25,show_metric=True,snapshot_step=100)
 
-    r1=validateWav("nosnore1.wav")
-    r2 =validateWav("nosnore2.wav")
-    r1=validateWav("nosnore3.wav")
-    r2 =validateWav("nosnore4.wav")
+    nr1=validateWav("nosnore1.wav")
+    nr2 =validateWav("nosnore2.wav")
+    nr3=validateWav("nosnore3.wav")
+    nr4 =validateWav("nosnore4.wav")
 
-    r3 =validateWav("snore1.wav")
-    r4 =validateWav("snore2.wav")
+    r1 =validateWav("snore1.wav")
+    r2 =validateWav("snore2.wav")
     r3 =validateWav("snore3.wav")
     r4 =validateWav("snore4.wav")
 
-    total = r1+r2+r3+r4
-    #if total==2 : input("found?")
+    if (r1==1) and (r2==1) and (r3==1) and (r4==1) :input("found?")
 
 model.save("model/snore")
 model.load("model/snore")

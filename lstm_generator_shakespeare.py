@@ -7,7 +7,8 @@ from six.moves import urllib
 import tflearn
 from tflearn.data_utils import *
 
-path = "data/alllyricsheb.txt"
+#path = "data/alllyricsheb.txt"
+path = "data/shakespeare_input.txt"
 char_idx_file = 'char_idx.pickle'
 
 maxlen = 25
@@ -21,7 +22,7 @@ X, Y, char_idx = \
     textfile_to_semi_redundant_sequences(path, seq_maxlen=maxlen, redun_step=3,
                                          pre_defined_char_idx=char_idx)
 
-pickle.dump(char_idx, open(char_idx_file, 'wb'))
+#pickle.dump(char_idx, open(char_idx_file, 'wb'))
 
 g = tflearn.input_data([None, maxlen, len(char_idx)])
 g = tflearn.lstm(g, 512, return_seq=True)
