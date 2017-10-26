@@ -11,7 +11,7 @@ def validateWav(demo_file):
     if (result[0][1]>0.6) :
         rc =  1
         print demo_file + " " + str(rc)
-    else :print demo_file+" "+str(result[0][0])+" "+result[0][1]
+    else :print demo_file+" "+str((result[0][0]))+" "+str((result[0][1]))
     rc = 0
 
     return rc
@@ -33,7 +33,7 @@ if mfcc :
     height = 200
     net = tflearn.input_data(shape=[None, width,height])
     net = tflearn.lstm(net, 128,name="lstm2",return_seq=True ,activation="Tanh")
-    net = tflearn.lstm(net, 64,name="lstm2",dropout=0.5,activation="Tanh")
+    net = tflearn.lstm(net, 64,name="lstm21",dropout=0.5,activation="Tanh")
     net = tflearn.fully_connected(net, number_classes,activation="ReLU")
     net = tflearn.regression(net, optimizer='adam', loss='categorical_crossentropy',learning_rate=learning_rate)
 else :
@@ -50,7 +50,7 @@ for i in range(1,5000) :
     X, Y = next(batch)
     Xtest, Ytest = next(testbatch)
 
-    res = model.fit(X, Y,validation_set=(Xtest,Ytest),n_epoch=50,show_metric=True)
+    res = model.fit(X, Y,validation_set=(Xtest,Ytest),n_epoch=60,show_metric=True)
 
     nr1=validateWav("nosnore1.wav")
     nr2 =validateWav("nosnore2.wav")
