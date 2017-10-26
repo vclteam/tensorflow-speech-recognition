@@ -18,8 +18,8 @@ def validateWav(demo_file):
 
 
 
-batch=speech_data.wave_batch_snore(256,True)
-testbatch=speech_data.wave_batch_snore(32,True)
+batch=speech_data.wave_batch_snore(512,True)
+testbatch=speech_data.wave_batch_snore(64,True)
 
 learning_rate = 0.0001
 number_classes=2 # Digits
