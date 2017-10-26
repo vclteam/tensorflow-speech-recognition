@@ -15,7 +15,7 @@ mfcc=True
 def validateWav(demo_file):
     demoData = speech_data.load_wav_file(speech_data.snore_train_path + demo_file,140000,1,mfcc)
     result = model.predict([demoData])
-    if (result[1][1]>0.6) : rc =  1
+    if (result[0][1]>0.6) : rc =  1
     rc = 0
     print demo_file+" "+rc
     return rc
@@ -36,8 +36,10 @@ if mfcc :
     height = 200
     net = tflearn.input_data(shape=[None, width,height])
     net = tflearn.lstm(net, 128,return_seq=True)
-    net = tflearn.lstm(net, 64, dropout=0.5)
-    net = tflearn.fully_connected(net, number_classes)
+    net = tflearn.dropout(net, 0.5)
+    net = tflearn.lstm(net, 64)
+    net = tflearn.dropout(net, 0.5)
+    net = tflearn.fully_connected(net, number_classes,activation="ReLU")
     net = tflearn.regression(net, optimizer='adam', loss='categorical_crossentropy',learning_rate=learning_rate)
 else :
     net = tflearn.input_data(shape=[None, 140000])
