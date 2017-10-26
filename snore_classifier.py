@@ -17,7 +17,7 @@ def validateWav(demo_file):
     result = model.predict([demoData])
     if (result[0][1]>0.6) : rc =  1
     rc = 0
-    print demo_file+" "+rc
+    print demo_file+" "+str(rc)
     return rc
 
 
