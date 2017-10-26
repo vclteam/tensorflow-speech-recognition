@@ -29,18 +29,21 @@ tflearn.init_graph(num_cores=8, gpu_memory_fraction=0.5)
 
 width = 40;
 height = 200
-net = tflearn.input_data(shape=[None, width,height])
-net = tflearn.conv_1d(net, 20,100,activation="Tanh")
-net = tflearn.conv_1d(net, 10,50,activation="Tanh")
-net = tflearn.conv_1d(net, 10,50,activation="Tanh")
-net = tflearn.conv_1d(net, 20,100,activation="Tanh")
-net = tflearn.fully_connected(net, number_classes,activation="Tanh")
-net = tflearn.regression(net, optimizer='adam', loss='categorical_crossentropy',learning_rate=learning_rate)
+convnet = tflearn.input_data(shape=[None, width, height, 1], name='input')
+convnet = tflearn.conv_2d(convnet, 32, 5, activation='relu')
+convnet = tflearn.max_pool_2d(convnet, 5)
+convnet = tflearn.conv_2d(convnet, 64, 5, activation='relu')
+convnet = tflearn.max_pool_2d(convnet, 5)
+convnet = tflearn.fully_connected(convnet, 1024, activation='relu')
+convnet = tflearn.dropout(convnet, 0.8)
+convnet = tflearn.fully_connected(convnet, 2, activation='softmax')
+convnet = tflearn.regression(convnet, optimizer='adam',  loss='categorical_crossentropy', name='targets')
 
-model = tflearn.DNN(net)
+model = tflearn.DNN(convnet)
 try :
     model.save("model/snore")
 except :
+    print "NO DATA"
 
 for i in range(200) :
     X, Y = next(batch)
