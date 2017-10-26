@@ -15,9 +15,12 @@ mfcc=True
 def validateWav(demo_file):
     demoData = speech_data.load_wav_file(speech_data.snore_train_path + demo_file,140000,1,mfcc)
     result = model.predict([demoData])
-    if (result[0][1]>0.6) : rc =  1
+    if (result[0][1]>0.6) :
+        rc =  1
+        print demo_file + " " + str(rc)
+    else :print demo_file+" "+str(result[0][0])+" "+result[0][1]
     rc = 0
-    print demo_file+" "+str(rc)
+
     return rc
 
 
@@ -36,10 +39,10 @@ if mfcc :
     width = 20;
     height = 200
     net = tflearn.input_data(shape=[None, width,height])
-    net = tflearn.lstm(net, 128,return_seq=True,name="lstm2")
-    net = tflearn.dropout(net, 0.5)
+    net = tflearn.lstm(net, 128,name="lstm2")
+    net = tflearn.dropout(net, 0.5,name="1lstm2")
     net = tflearn.lstm(net, 64,name="lstm2")
-    net = tflearn.dropout(net, 0.5)
+    net = tflearn.dropout(net, 0.5,name="dlstm1")
     net = tflearn.fully_connected(net, number_classes,activation="ReLU")
     net = tflearn.regression(net, optimizer='adam', loss='categorical_crossentropy',learning_rate=learning_rate)
 else :
@@ -52,11 +55,11 @@ else :
     net = tflearn.regression(net, optimizer='adam', loss='categorical_crossentropy',learning_rate=0.0001)
 
 model = tflearn.DNN(net)
-for i in range(1,500) :
+for i in range(1,5000) :
     X, Y = next(batch)
     Xtest, Ytest = next(testbatch)
 
-    res = model.fit(X, Y,validation_set=(Xtest,Ytest),n_epoch=25,show_metric=True,snapshot_step=100)
+    res = model.fit(X, Y,validation_set=(Xtest,Ytest),n_epoch=50,show_metric=True)
 
     nr1=validateWav("nosnore1.wav")
     nr2 =validateWav("nosnore2.wav")
@@ -68,16 +71,10 @@ for i in range(1,500) :
     r3 =validateWav("snore3.wav")
     r4 =validateWav("snore4.wav")
 
+    model.save("model/snore")
+
     if (r1==1) and (r2==1) and (r3==1) and (r4==1) :input("found?")
 
-model.save("model/snore")
-model.load("model/snore")
 
-validateWav("nosnore1.wav")
-validateWav("nosnore2.wav")
-validateWav("nosnore3.wav")
-validateWav("nosnore4.wav")
-validateWav("snore1.wav")
-validateWav("snore2.wav")
-validateWav("snore3.wav")
-validateWav("snore4.wav")
+#model.load("model/snore")
+
