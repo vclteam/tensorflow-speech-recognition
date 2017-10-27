@@ -25,7 +25,7 @@ learning_rate = 0.0001
 number_classes=2 # Digits
 
 # Classification
-tflearn.init_graph(num_cores=8, gpu_memory_fraction=0.5)
+tflearn.init_graph(num_cores=5, gpu_memory_fraction=0.6)
 
 width = 40;
 height = 200
@@ -41,15 +41,15 @@ convnet = tflearn.regression(convnet, optimizer='adam',  loss='categorical_cross
 
 model = tflearn.DNN(convnet)
 try :
-    model.save("model/snore")
+    model.load("model/snore")
 except :
     print "NO DATA"
 
-for i in range(200) :
+for i in range(300) :
     X, Y = next(batch)
     Xtest, Ytest = next(testbatch)
 
-    res = model.fit(X, Y,validation_set=(Xtest,Ytest),n_epoch=100,show_metric=True)
+    res = model.fit(X, Y,validation_set=(Xtest,Ytest),n_epoch=250,show_metric=True)
 
     nr1=validateWav("nosnore1.wav")
     nr2 =validateWav("nosnore2.wav")
