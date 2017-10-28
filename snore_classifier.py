@@ -2,6 +2,7 @@
 #!/usr/bin/env PYTHONIOENCODING="utf-8" python
 import tflearn
 import speech_data
+import tensorflow as tf
 
 
 def validateWav(demo_file):
@@ -30,20 +31,32 @@ tflearn.init_graph(num_cores=5, gpu_memory_fraction=0.6)
 width = 40;
 height = 200
 convnet = tflearn.input_data(shape=[None, width, height, 1], name='input')
-convnet = tflearn.conv_2d(convnet, 32, 5, activation='relu')
-convnet = tflearn.max_pool_2d(convnet, 5)
+convnet = tflearn.conv_2d(convnet, 128, 5, activation='relu')
 convnet = tflearn.conv_2d(convnet, 64, 5, activation='relu')
 convnet = tflearn.max_pool_2d(convnet, 5)
-convnet = tflearn.fully_connected(convnet, 1024, activation='relu')
-convnet = tflearn.dropout(convnet, 0.8)
+
+convnet = tflearn.conv_2d(convnet, 128, 5, activation='relu')
+convnet = tflearn.conv_2d(convnet, 64, 5, activation='relu')
+convnet = tflearn.max_pool_2d(convnet, 5)
+
+convnet = tflearn.conv_2d(convnet, 128, 5, activation='relu')
+convnet = tflearn.conv_2d(convnet, 64, 5, activation='relu')
+convnet = tflearn.max_pool_2d(convnet, 5)
+
 convnet = tflearn.fully_connected(convnet, 2, activation='softmax')
 convnet = tflearn.regression(convnet, optimizer='adam',  loss='categorical_crossentropy', name='targets')
 
-model = tflearn.DNN(convnet)
+col = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
+for x in col:
+    tf.add_to_collection(tf.GraphKeys.VARIABLES, x )
+
+model = tflearn.DNN(convnet,tensorboard_verbose=0)
 try :
-    model.load("model/snore")
+    #model.load("model/snore")
+    print ""
 except :
     print "NO DATA"
+
 
 for i in range(300) :
     X, Y = next(batch)
