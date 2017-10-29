@@ -10,8 +10,8 @@ def validateWav(demo_file):
     result = model.predict([demoData])
     if (result[0][1]>0.6) :
         rc =  1
-        print demo_file+":"+str((result[0][0]))+" / "+str((result[0][1]))+ ": ISSNORE"
-    else :print demo_file+":"+str((result[0][0]))+" / "+str((result[0][1]))
+        print (demo_file+":"+str((result[0][0]))+" / "+str((result[0][1]))+ ": ISSNORE")
+    else :print (demo_file+":"+str((result[0][0]))+" / "+str((result[0][1])))
     rc = 0
 
     return rc
@@ -53,9 +53,9 @@ for x in col:
 model = tflearn.DNN(convnet,tensorboard_verbose=0)
 try :
     #model.load("model/snore")
-    print ""
+    print ("")
 except :
-    print "NO DATA"
+    print ("NO DATA")
 
 
 for i in range(300) :
