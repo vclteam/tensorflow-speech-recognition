@@ -10,14 +10,11 @@ def validateWav(demo_file):
     result = model.predict([demoData])
     if (result[0][1]>0.6) :
         rc =  1
-        print demo_file+":"+str((result[0][0]))+" / "+str((result[0][1]))+ ": ISSNORE"
-    else :print demo_file+":"+str((result[0][0]))+" / "+str((result[0][1]))
+        print (demo_file+":"+str((result[0][0]))+" / "+str((result[0][1]))+ ": ISSNORE")
+    else : print (demo_file+":"+str((result[0][0]))+" / "+str((result[0][1])))
     rc = 0
 
     return rc
-
-
-
 
 batch=speech_data.wave_batch_snore(128,True)
 testbatch=speech_data.wave_batch_snore(30,True)
@@ -36,9 +33,6 @@ convnet = tflearn.max_pool_2d(convnet, 16,16)
 convnet = tflearn.conv_2d(convnet, 16, 16, activation='relu')
 convnet = tflearn.max_pool_2d(convnet, 8,8)
 
-# convnet = tflearn.conv_2d(convnet, 128, 5, activation='relu')
-# convnet = tflearn.conv_2d(convnet, 64, 5, activation='relu')
-# convnet = tflearn.max_pool_2d(convnet, 5)
 convnet = tflearn.fully_connected(convnet, 4096, activation='softmax')
 convnet = tflearn.fully_connected(convnet, 1024, activation='softmax')
 convnet = tflearn.fully_connected(convnet, 2, activation='softmax')
@@ -52,9 +46,8 @@ model = tflearn.DNN(convnet,tensorboard_verbose=0)
 try :
     if len(os.listdir("model/"))>0 :
         model.load("model/snore")
-    print ""
 except :
-    print "NO DATA"
+    print ("NO DATA")
 
 
 for i in range(300) :
@@ -75,5 +68,5 @@ for i in range(300) :
 
     model.save("model/snore")
 
-    if (r1==1) and (r2==1) and (r3==1) and (r4==1) :input("found?")
+    
 
