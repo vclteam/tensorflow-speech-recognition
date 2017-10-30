@@ -77,6 +77,3 @@ for i in range(300) :
 
     if (r1==1) and (r2==1) and (r3==1) and (r4==1) :input("found?")
 
-
-#model.load("model/snore")
-
