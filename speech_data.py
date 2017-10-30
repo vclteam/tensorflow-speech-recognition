@@ -188,10 +188,10 @@ def load_wav_file(name, CHUNK,append,usemfcc):
     # print("loading %s"%name)
 
     if usemfcc :
-        wave1, sr = librosa.load(name, mono=True,sr=16000)
-        mfcc = librosa.feature.mfcc(wave1, sr,None,40)
-        chunk = np.pad(mfcc, ((0, 0), (0, 200 - len(mfcc[0]))), mode='constant', constant_values=0)
-        chunk = chunk.reshape(40, 200, 1)
+        wave1, sr = librosa.load(name, mono=True)
+        mfcc = librosa.feature.mfcc(wave1, sr = sr,n_mfcc=40)
+        chunk2 = np.pad(mfcc, ((0, 0), (0, 200 - len(mfcc[0]))), mode='constant', constant_values=0)
+        chunk = chunk2.reshape(40, 200, 1)
     else :
         f = wave.open(name, "rb")
         chunk = []
