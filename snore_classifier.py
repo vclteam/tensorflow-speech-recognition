@@ -16,6 +16,7 @@ def validateWav(demo_file):
 
     return rc
 
+
 batch=speech_data.wave_batch_snore(128,True)
 testbatch=speech_data.wave_batch_snore(30,True)
 
@@ -25,7 +26,7 @@ number_classes=2 # Digits
 # Classification
 tflearn.init_graph(num_cores=5, gpu_memory_fraction=0.6)
 
-width = 40;
+width = 40
 height = 200
 convnet = tflearn.input_data(shape=[None, width, height, 1], name='input')
 convnet = tflearn.conv_2d(convnet, 32, 32, activation='relu')
@@ -38,9 +39,9 @@ convnet = tflearn.fully_connected(convnet, 1024, activation='softmax')
 convnet = tflearn.fully_connected(convnet, 2, activation='softmax')
 convnet = tflearn.regression(convnet, optimizer='adam',  loss='categorical_crossentropy', name='targets')
 
-col = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
-for x in col:
-    tf.add_to_collection(tf.GraphKeys.VARIABLES, x )
+#col = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
+#for x in col:
+#    tf.add_to_collection(tf.GraphKeys.VARIABLES, x )
 
 model = tflearn.DNN(convnet,tensorboard_verbose=0)
 try :
