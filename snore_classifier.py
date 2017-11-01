@@ -18,7 +18,7 @@ def validateWav(demo_file):
 
 
 batch=speech_data.wave_batch_snore(128,True)
-testbatch=speech_data.wave_batch_snore(30,True)
+testbatch=speech_data.wave_batch_snore(24,True)
 
 learning_rate = 0.001
 number_classes = 2 # Digits
@@ -29,29 +29,27 @@ tflearn.init_graph(num_cores=5, gpu_memory_fraction=0.6)
 width = 40
 height = 200
 convnet = tflearn.input_data(shape=[None, width, height, 1], name='input')
-convnet = tflearn.conv_2d(convnet, 128, 64, activation='relu')
-convnet = tflearn.conv_2d(convnet, 128, 64, activation='relu')
+convnet = tflearn.conv_2d(convnet, 128, 128, activation='relu')
+convnet = tflearn.conv_2d(convnet, 64, 64, activation='relu')
 convnet = tflearn.max_pool_2d(convnet, 2,2)
 convnet = tflearn.dropout(convnet, 0.5)
 
-convnet = tflearn.conv_2d(convnet, 128, 64, activation='relu')
-convnet = tflearn.conv_2d(convnet, 128, 64, activation='relu')
+convnet = tflearn.conv_2d(convnet, 128, 128, activation='relu')
+convnet = tflearn.conv_2d(convnet, 64, 64, activation='relu')
+convnet = tflearn.max_pool_2d(convnet, 2,2)
+convnet = tflearn.dropout(convnet, 0.5)
+
+convnet = tflearn.conv_2d(convnet, 128, 128, activation='relu')
+convnet = tflearn.conv_2d(convnet, 64, 64, activation='relu')
 convnet = tflearn.max_pool_2d(convnet, 2, 2)
 convnet = tflearn.dropout(convnet, 0.5)
 
-convnet = tflearn.conv_2d(convnet, 128, 64, activation='relu')
-convnet = tflearn.conv_2d(convnet, 128, 64, activation='relu')
-convnet = tflearn.max_pool_2d(convnet, 2, 2)
-convnet = tflearn.dropout(convnet, 0.5)
 
 convnet = tflearn.fully_connected(convnet, 2, activation='softmax')
 convnet = tflearn.regression(convnet, optimizer='adam',  loss='categorical_crossentropy', name='targets')
 
-#col = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
-#for x in col:
-#    tf.add_to_collection(tf.GraphKeys.VARIABLES, x )
 
-model = tflearn.DNN(convnet,tensorboard_verbose=0)
+model = tflearn.DNN(convnet, tensorboard_verbose=0)
 try:
     if len(os.listdir("model/"))>0 :
         model.load("model/snore")
