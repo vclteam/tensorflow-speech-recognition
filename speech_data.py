@@ -209,7 +209,8 @@ def load_wav_file(name, append):
     d = res.shape[2]-3*res.shape[1]
     d1 = int(round(d/2))
     d2=d-d1
-    xs = res.reshape((3*res.shape[1],res.shape[2],1))[:,d1:res.shape[2]-d2]
+    xs = res.reshape((3*res.shape[1],res.shape[2]))[:,d1:res.shape[2]-d2]
+    xs = xs.reshape([36,36,1])
 
     #return chunk
     return xs

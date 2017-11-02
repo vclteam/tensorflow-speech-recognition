@@ -35,21 +35,12 @@ width = 36
 height = 36
 convnet = tflearn.input_data(shape=[None, 36, 36, 1], name='input')
 
-convnet = tflearn.conv_2d(convnet, 64, 3,3, activation='relu')
-convnet = tflearn.conv_2d(convnet, 32, 3,3 , activation='relu')
-convnet = tflearn.max_pool_2d(convnet, 2, 1)
-convnet = tflearn.dropout(convnet, 0.25)
+convnet = tflearn.conv_2d(convnet, 64, 3, activation='relu')
+convnet = tflearn.conv_2d(convnet, 32, 3 , activation='relu')
+convnet = tflearn.max_pool_2d(convnet, 2)
+convnet = tflearn.dropout(convnet, 0.50)
 
-convnet = tflearn.conv_2d(convnet, 64, 3,3, activation='relu')
-convnet = tflearn.conv_2d(convnet, 32, 3,3 , activation='relu')
-convnet = tflearn.max_pool_2d(convnet, 2, 1)
-convnet = tflearn.dropout(convnet, 0.25)
-
-convnet = tflearn.conv_2d(convnet, 64, 3,3, activation='relu')
-convnet = tflearn.conv_2d(convnet, 32, 3,3 , activation='relu')
-convnet = tflearn.max_pool_2d(convnet, 2, 1)
-convnet = tflearn.dropout(convnet, 0.25)
-
+convnet = tflearn.fully_connected(convnet, 256, activation='tanh')
 convnet = tflearn.fully_connected(convnet, 2, activation='softmax')
 convnet = tflearn.regression(convnet, optimizer='adam', loss='categorical_crossentropy',
                              name='targets')
