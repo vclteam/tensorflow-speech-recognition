@@ -205,12 +205,14 @@ def load_wav_file(name, append):
     mfcc_delta2 = librosa.feature.delta(mfcc, order=2)
     res = np.array([rescale(mfcc[1:]), rescale(
         mfcc_delta[1:]), rescale(mfcc_delta2[1:])])
-    #chunk2 = np.pad(
-    #    mfcc, ((0, 0), (0, 200 - len(mfcc[0]))), mode='constant', constant_values=0)
-    #chunk = chunk2.reshape(40, 200, 1)
+
+    d = res.shape[2]-3*res.shape[1]
+    d1 = int(round(d/2))
+    d2=d-d1
+    xs = res.reshape((3*res.shape[1],res.shape[2],1))[:,d1:res.shape[2]-d2]
 
     #return chunk
-    return res
+    return xs
 
 
 def spectro_batch_generator(batch_size=10, width=64, source_data=Source.DIGIT_SPECTROS, target=Target.digits):

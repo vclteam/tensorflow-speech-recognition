@@ -31,9 +31,9 @@ number_classes = 2  # Digits
 # Classification
 tflearn.init_graph(gpu_memory_fraction=0.9)
 
-width = 12
-height = 200
-convnet = tflearn.input_data(shape=[None, 3, 12, 200], name='input')
+width = 36
+height = 36
+convnet = tflearn.input_data(shape=[None, 36, 36, 1], name='input')
 
 convnet = tflearn.conv_2d(convnet, 64, 3,3, activation='relu')
 convnet = tflearn.conv_2d(convnet, 32, 3,3 , activation='relu')
