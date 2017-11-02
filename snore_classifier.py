@@ -31,23 +31,23 @@ number_classes = 2  # Digits
 # Classification
 tflearn.init_graph(gpu_memory_fraction=0.9)
 
-width = 40
+width = 12
 height = 200
-convnet = tflearn.input_data(shape=[None, width, height, 1], name='input')
-convnet = tflearn.conv_2d(convnet, 128, 128, activation='relu')
-#convnet = tflearn.conv_2d(convnet, 64, 64, activation='relu')
-#convnet = tflearn.max_pool_2d(convnet, 2, 2)
-#convnet = tflearn.dropout(convnet, 0.5)
+convnet = tflearn.input_data(shape=[None, 3, 12, 200], name='input')
+convnet = tflearn.conv_2d(convnet, 12, 32, activation='relu')
+convnet = tflearn.conv_2d(convnet, 12, 32, activation='relu')
+convnet = tflearn.max_pool_2d(convnet, 2, 2)
+convnet = tflearn.dropout(convnet, 0.5)
 
-#convnet = tflearn.conv_2d(convnet, 128, 128, activation='relu')
-#convnet = tflearn.conv_2d(convnet, 64, 64, activation='relu')
-#convnet = tflearn.max_pool_2d(convnet, 2,2)
-#convnet = tflearn.dropout(convnet, 0.5)
+convnet = tflearn.conv_2d(convnet, 12, 32, activation='relu')
+convnet = tflearn.conv_2d(convnet, 12, 32, activation='relu')
+convnet = tflearn.max_pool_2d(convnet, 2, 2)
+convnet = tflearn.dropout(convnet, 0.5)
 
-#convnet = tflearn.conv_2d(convnet, 128, 128, activation='relu')
-#convnet = tflearn.conv_2d(convnet, 64, 64, activation='relu')
-#convnet = tflearn.max_pool_2d(convnet, 2, 2,)
-#convnet = tflearn.dropout(convnet, 0.5)
+convnet = tflearn.conv_2d(convnet, 12, 32, activation='relu')
+convnet = tflearn.conv_2d(convnet, 12, 32, activation='relu')
+convnet = tflearn.max_pool_2d(convnet, 2, 2)
+convnet = tflearn.dropout(convnet, 0.5)
 
 
 convnet = tflearn.fully_connected(convnet, 2, activation='softmax')
