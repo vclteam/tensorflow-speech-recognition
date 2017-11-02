@@ -22,8 +22,8 @@ def validateWav(demo_file):
     return rc
 
 
-batch = speech_data.wave_batch_snore(64, True)
-testbatch = speech_data.wave_batch_snore(12, True)
+batch = speech_data.wave_batch_snore(128, True)
+testbatch = speech_data.wave_batch_snore(24, True)
 
 learning_rate = 0.001
 number_classes = 2  # Digits
@@ -34,21 +34,21 @@ tflearn.init_graph(gpu_memory_fraction=0.9)
 width = 12
 height = 200
 convnet = tflearn.input_data(shape=[None, 3, 12, 200], name='input')
-convnet = tflearn.conv_2d(convnet, 12, 32, activation='relu')
-convnet = tflearn.conv_2d(convnet, 12, 32, activation='relu')
-convnet = tflearn.max_pool_2d(convnet, 2, 2)
-convnet = tflearn.dropout(convnet, 0.5)
 
-convnet = tflearn.conv_2d(convnet, 12, 32, activation='relu')
-convnet = tflearn.conv_2d(convnet, 12, 32, activation='relu')
-convnet = tflearn.max_pool_2d(convnet, 2, 2)
-convnet = tflearn.dropout(convnet, 0.5)
+convnet = tflearn.conv_2d(convnet, 64, 3,3, activation='relu')
+convnet = tflearn.conv_2d(convnet, 32, 3,3 , activation='relu')
+convnet = tflearn.max_pool_2d(convnet, 2, 1)
+convnet = tflearn.dropout(convnet, 0.25)
 
-convnet = tflearn.conv_2d(convnet, 12, 32, activation='relu')
-convnet = tflearn.conv_2d(convnet, 12, 32, activation='relu')
-convnet = tflearn.max_pool_2d(convnet, 2, 2)
-convnet = tflearn.dropout(convnet, 0.5)
+convnet = tflearn.conv_2d(convnet, 64, 3,3, activation='relu')
+convnet = tflearn.conv_2d(convnet, 32, 3,3 , activation='relu')
+convnet = tflearn.max_pool_2d(convnet, 2, 1)
+convnet = tflearn.dropout(convnet, 0.25)
 
+convnet = tflearn.conv_2d(convnet, 64, 3,3, activation='relu')
+convnet = tflearn.conv_2d(convnet, 32, 3,3 , activation='relu')
+convnet = tflearn.max_pool_2d(convnet, 2, 1)
+convnet = tflearn.dropout(convnet, 0.25)
 
 convnet = tflearn.fully_connected(convnet, 2, activation='softmax')
 convnet = tflearn.regression(convnet, optimizer='adam', loss='categorical_crossentropy',
@@ -68,7 +68,7 @@ for i in range(300):
     Xtest, Ytest = next(testbatch)
 
     res = model.fit(X, Y, validation_set=(Xtest, Ytest),
-                    n_epoch=50, show_metric=True)
+                    n_epoch=25, show_metric=True)
 
     nr1 = validateWav("nosnore1.wav")
     nr2 = validateWav("nosnore2.wav")

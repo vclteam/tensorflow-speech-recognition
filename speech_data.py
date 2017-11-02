@@ -306,8 +306,8 @@ def wave_batch_snore(batch_size, usemfcc):
         cnt = 0
 
         for wav in files:
-            sys.stdout.write(wav)
-            sys.stdout.flush()
+            #sys.stdout.write(wav)
+            #sys.stdout.flush()
             if not wav.endswith(".wav"):
                 continue
             cnt = cnt + 1
