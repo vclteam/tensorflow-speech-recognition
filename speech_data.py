@@ -193,8 +193,10 @@ def rescale(m):
 
 
 def load_wav_file(name, append):
+    fft_win = 50
+    n_fft = int(round(fft_win/1000*sr))
     wave1, sr = librosa.load(name, mono=True)
-    mfcc = librosa.feature.mfcc(wave1, sr=sr, n_mfcc=40)
+    mfcc = librosa.feature.mfcc(wave1, sr=sr, n_mfcc=13)
     mfcc = np.pad(
         mfcc, ((0, 0), (0, 200 - len(mfcc[0]))), mode='constant', constant_values=0)
     
