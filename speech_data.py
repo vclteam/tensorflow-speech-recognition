@@ -41,10 +41,12 @@ test_fraction = 0.1  # 10% of data for test / verification
 # http://pannous.net/files/spoken_numbers_pcm.tar
 class Source:  # labels
     DIGIT_WAVES = 'spoken_numbers_pcm.tar'
-    DIGIT_SPECTROS = 'spoken_numbers_spectros_64x64.tar'  # 64x64  baby data set, works astonishingly well
+    # 64x64  baby data set, works astonishingly well
+    DIGIT_SPECTROS = 'spoken_numbers_spectros_64x64.tar'
     NUMBER_WAVES = 'spoken_numbers_wav.tar'
     NUMBER_IMAGES = 'spoken_numbers.tar'  # width=256 height=256
-    WORD_SPECTROS = 'https://dl.dropboxusercontent.com/u/23615316/spoken_words.tar'  # width,height=512# todo: sliding window!
+    # width,height=512# todo: sliding window!
+    WORD_SPECTROS = 'https://dl.dropboxusercontent.com/u/23615316/spoken_words.tar'
     WORD_WAVES = 'spoken_words_wav.tar'
     TEST_INDEX = 'test_index.txt'
     TRAIN_INDEX = 'train_index.txt'
@@ -149,7 +151,8 @@ def maybe_download(file, work_directory=DATA_DIR):
         else:
             url_filename = file
         print('Downloading from %s to %s' % (url_filename, filepath))
-        filepath, _ = urllib.request.urlretrieve(url_filename, filepath, progresshook)
+        filepath, _ = urllib.request.urlretrieve(
+            url_filename, filepath, progresshook)
         statinfo = os.stat(filepath)
         print('Successfully downloaded', file, statinfo.st_size, 'bytes.')
     # os.system('ln -s '+work_directory)
@@ -182,47 +185,42 @@ def get_speakers(path=pcm_path):
     print(len(speakers), " speakers: ", speakers)
     return speakers
 
+def rescale(m):
+    #rescale by global max of absolute values
+    offset = m.min()
+    scale = m.max()-m.min()
+    return (m-offset)/scale
 
 
-def load_wav_file(name, CHUNK,append,usemfcc):
-    # print("loading %s"%name)
+def load_wav_file(name, append):
+    wave1, sr = librosa.load(name, mono=True)
+    mfcc = librosa.feature.mfcc(wave1, sr=sr, n_mfcc=40)
+    mfcc = np.pad(
+        mfcc, ((0, 0), (0, 200 - len(mfcc[0]))), mode='constant', constant_values=0)
+    
+    mfcc_delta = librosa.feature.delta(mfcc)
+    mfcc_delta2 = librosa.feature.delta(mfcc, order=2)
+    res = np.array([rescale(mfcc[1:]), rescale(
+        mfcc_delta[1:]), rescale(mfcc_delta2[1:])])
+    #chunk2 = np.pad(
+    #    mfcc, ((0, 0), (0, 200 - len(mfcc[0]))), mode='constant', constant_values=0)
+    #chunk = chunk2.reshape(40, 200, 1)
 
-    if usemfcc :
-        wave1, sr = librosa.load(name, mono=True)
-        mfcc = librosa.feature.mfcc(wave1, sr = sr,n_mfcc=40)
-        chunk2 = np.pad(mfcc, ((0, 0), (0, 200 - len(mfcc[0]))), mode='constant', constant_values=0)
-        chunk = chunk2.reshape(40, 200, 1)
-    else :
-        f = wave.open(name, "rb")
-        chunk = []
-        data0 = f.readframes(CHUNK)
-        while data0:  # f.getnframes()
-            data = numpy.fromstring(data0, dtype='uint8')
-            data = (data + 128) / 255.  # 0-1 for Better convergence
-
-            chunk.extend(data)
-            data0 = f.readframes(CHUNK)
-        # finally trim:
-        chunk = chunk[0:CHUNK * 2]  # should be enough for now -> cut
-        if append==1 :chunk.extend(numpy.zeros(CHUNK * 2 - len(chunk)))  # fill with padding 0's
-        else : chunk = numpy.insert(chunk,0,numpy.zeros(CHUNK * 2 - len(chunk)))  # fill with prepadding 0's
-
-
-    return chunk
-
+    #return chunk
+    return res
 
 
 def spectro_batch_generator(batch_size=10, width=64, source_data=Source.DIGIT_SPECTROS, target=Target.digits):
-    # maybe_download(Source.NUMBER_IMAGES , DATA_DIR)
-    # maybe_download(Source.SPOKEN_WORDS, DATA_DIR)
     path = maybe_download(source_data, DATA_DIR)
     path = path.replace("_spectros", "")  # HACK! remove!
     height = width
     batch = []
     labels = []
     speakers = get_speakers(path)
-    if target == Target.digits: num_classes = 10
-    if target == Target.first_letter: num_classes = 32
+    if target == Target.digits:
+        num_classes = 10
+    if target == Target.first_letter:
+        num_classes = 32
     files = os.listdir(path)
     # shuffle(files) # todo : split test_fraction batch here!
     # files=files[0:int(len(files)*(1-test_fraction))]
@@ -231,14 +229,17 @@ def spectro_batch_generator(batch_size=10, width=64, source_data=Source.DIGIT_SP
         # print("shuffling source data files")
         shuffle(files)
         for image_name in files:
-            if not "_" in image_name: continue  # bad !?!
-            image = skimage.io.imread(path + "/" + image_name).astype(numpy.float32)
+            if not "_" in image_name:
+                continue  # bad !?!
+            image = skimage.io.imread(
+                path + "/" + image_name).astype(numpy.float32)
             # image.resize(width,height) # lets see ...
             data = image / 255.  # 0-1 for Better convergence
             # data = data.reshape([width * height])  # tensorflow matmul needs flattened matrices wtf
             batch.append(list(data))
             # classe=(ord(image_name[0]) - 48)  # -> 0=0 .. A:65-48 ... 74 for 'z'
-            classe = (ord(image_name[0]) - 48) % 32  # -> 0=0  17 for A, 10 for z ;)
+            # -> 0=0  17 for A, 10 for z ;)
+            classe = (ord(image_name[0]) - 48) % 32
             labels.append(dense_to_one_hot(classe, num_classes))
             if len(batch) >= batch_size:
                 yield batch, labels
@@ -248,7 +249,8 @@ def spectro_batch_generator(batch_size=10, width=64, source_data=Source.DIGIT_SP
 
 def mfcc_batch_generator(batch_size=10, source=Source.DIGIT_WAVES, target=Target.digits):
     maybe_download(source, DATA_DIR)
-    if target == Target.speaker: speakers = get_speakers()
+    if target == Target.speaker:
+        speakers = get_speakers()
     batch_features = []
     labels = []
     files = os.listdir(path)
@@ -256,7 +258,8 @@ def mfcc_batch_generator(batch_size=10, source=Source.DIGIT_WAVES, target=Target
         print("loaded batch of %d files" % len(files))
         shuffle(files)
         for file in files:
-            if not file.endswith(".wav"): continue
+            if not file.endswith(".wav"):
+                continue
             wave, sr = librosa.load(path + file, mono=True)
             mfcc = librosa.feature.mfcc(wave, sr)
             if target == Target.speaker:
@@ -274,7 +277,8 @@ def mfcc_batch_generator(batch_size=10, source=Source.DIGIT_WAVES, target=Target
                 raise Exception("todo : labels for Target!")
             labels.append(label)
             # print(np.array(mfcc).shape)
-            mfcc = np.pad(mfcc, ((0, 0), (0, 80 - len(mfcc[0]))), mode='constant', constant_values=0)
+            mfcc = np.pad(
+                mfcc, ((0, 0), (0, 80 - len(mfcc[0]))), mode='constant', constant_values=0)
             batch_features.append(np.array(mfcc))
             if len(batch_features) >= batch_size:
                 # if target == Target.word:  labels = sparse_labels(labels)
@@ -287,39 +291,41 @@ def mfcc_batch_generator(batch_size=10, source=Source.DIGIT_WAVES, target=Target
                 labels = []
 
 
-def wave_batch_snore(batch_size,usemfcc):
-    maybe_download("https://snorestorage.blob.core.windows.net/audio/snoreaudio.zip", DATA_DIR)
+def wave_batch_snore(batch_size, usemfcc):
+    maybe_download(
+        "https://snorestorage.blob.core.windows.net/audio/snoreaudio.zip", DATA_DIR)
     batch_waves = []
     labels = []
 
     files = os.listdir(snore_path)
     while True:
         shuffle(files)
-        cnt = 0;
+        cnt = 0
 
         for wav in files:
-            if not wav.endswith(".wav"): continue
+            if not wav.endswith(".wav"):
+                continue
             cnt = cnt + 1
             if wav.startswith("nosnore"):
                 labels.append([1, 0])
             else:
                 labels.append([0, 1])
-            chunk = load_wav_file(snore_path + wav, 140000, random.randint(0, 1), usemfcc)
+            chunk = load_wav_file(snore_path + wav, random.randint(0, 1))
             batch_waves.append(chunk)
-            # batch_waves.append(chunks[input_width])
             if len(batch_waves) >= batch_size:
                 print("loaded batch of %d files" % cnt)
                 yield batch_waves, labels
                 batch_waves = []  # Reset for next batch
                 labels = []
-                cnt = 0;
+                cnt = 0
 
 
 # If you set dynamic_pad=True when calling tf.train.batch the returned batch will be automatically padded with 0s. Handy! A lower-level option is to use tf.PaddingFIFOQueue.
 # only apply to a subset of all images at one time
 def wave_batch_generator(batch_size=10, source=Source.DIGIT_WAVES, target=Target.digits):  # speaker
     maybe_download(source, DATA_DIR)
-    if target == Target.speaker: speakers = get_speakers()
+    if target == Target.speaker:
+        speakers = get_speakers()
     batch_waves = []
     labels = []
     # input_width=CHUNK*6 # wow, big!!
@@ -328,7 +334,8 @@ def wave_batch_generator(batch_size=10, source=Source.DIGIT_WAVES, target=Target
         shuffle(files)
         print("loaded batch of %d files" % len(files))
         for wav in files:
-            if not wav.endswith(".wav"): continue
+            if not wav.endswith(".wav"):
+                continue
             if target == Target.digits:
                 labels.append(dense_to_one_hot(int(wav[0])))
             elif target == Target.speaker:
@@ -337,7 +344,7 @@ def wave_batch_generator(batch_size=10, source=Source.DIGIT_WAVES, target=Target
                 label = dense_to_one_hot((ord(wav[0]) - 48) % 32, 32)
             else:
                 raise Exception("todo : Target.word label!")
-            chunk = load_wav_file(path + wav, 4096)
+            chunk = load_wav_file(path + wav)
             batch_waves.append(chunk)
             # batch_waves.append(chunks[input_width])
             if len(batch_waves) >= batch_size:
@@ -354,7 +361,8 @@ class DataSet(object):
             self.one_hot = one_hot
         else:
             num = len(images)
-            assert num == len(labels), ('images.shape: %s labels.shape: %s' % (images.shape, labels.shape))
+            assert num == len(labels), ('images.shape: %s labels.shape: %s' % (
+                images.shape, labels.shape))
             print("len(images) %d" % num)
             self._num_examples = num
         self.cache = {}
@@ -389,13 +397,15 @@ class DataSet(object):
     # only apply to a subset of all images at one time
     def load(self, image_names):
         print("loading %d images" % len(image_names))
-        return list(map(self.load_image, image_names))  # python3 map object WTF
+        # python3 map object WTF
+        return list(map(self.load_image, image_names))
 
     def load_image(self, image_name):
         if image_name in self.cache:
             return self.cache[image_name]
         else:
-            image = skimage.io.imread(DATA_DIR + image_name).astype(numpy.float32)
+            image = skimage.io.imread(
+                DATA_DIR + image_name).astype(numpy.float32)
             # images = numpy.multiply(images, 1.0 / 255.0)
             self.cache[image_name] = image
             return image
@@ -455,7 +465,8 @@ def one_hot_word(word, pad_to=max_word_length):
         x = [0] * num_characters
         x[(ord(c) - offset) % num_characters] = 1
         vec.append(x)
-    if pad_to: vec = pad(vec, pad_to, one_hot=True)
+    if pad_to:
+        vec = pad(vec, pad_to, one_hot=True)
     return vec
 
 

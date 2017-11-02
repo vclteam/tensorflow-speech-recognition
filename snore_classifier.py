@@ -5,63 +5,70 @@ import speech_data
 import tensorflow as tf
 import os
 
+
 def validateWav(demo_file):
-    demoData = speech_data.load_wav_file(speech_data.snore_train_path + demo_file,140000,1,True)
+    demoData = speech_data.load_wav_file(
+        speech_data.snore_train_path + demo_file, 0)
     result = model.predict([demoData])
-    if (result[0][1]>0.6) :
-        rc =  1
-        print (demo_file+":"+str((result[0][0]))+" / "+str((result[0][1]))+ ": ISSNORE")
-    else : print (demo_file+":"+str((result[0][0]))+" / "+str((result[0][1])))
+    if (result[0][1] > 0.6):
+        rc = 1
+        print(demo_file + ":" +
+              str((result[0][0])) + " / " + str((result[0][1])) + ": ISSNORE")
+    else:
+        print(demo_file + ":" +
+              str((result[0][0])) + " / " + str((result[0][1])))
     rc = 0
 
     return rc
 
 
-batch=speech_data.wave_batch_snore(128,True)
-testbatch=speech_data.wave_batch_snore(24,True)
+batch = speech_data.wave_batch_snore(64, True)
+testbatch = speech_data.wave_batch_snore(12, True)
 
 learning_rate = 0.001
-number_classes = 2 # Digits
+number_classes = 2  # Digits
 
 # Classification
-tflearn.init_graph(num_cores=5, gpu_memory_fraction=0.6)
+tflearn.init_graph(gpu_memory_fraction=0.9)
 
 width = 40
 height = 200
 convnet = tflearn.input_data(shape=[None, width, height, 1], name='input')
 convnet = tflearn.conv_2d(convnet, 128, 128, activation='relu')
-convnet = tflearn.conv_2d(convnet, 64, 64, activation='relu')
-convnet = tflearn.max_pool_2d(convnet, 2,2)
-convnet = tflearn.dropout(convnet, 0.5)
+#convnet = tflearn.conv_2d(convnet, 64, 64, activation='relu')
+#convnet = tflearn.max_pool_2d(convnet, 2, 2)
+#convnet = tflearn.dropout(convnet, 0.5)
 
-convnet = tflearn.conv_2d(convnet, 128, 128, activation='relu')
-convnet = tflearn.conv_2d(convnet, 64, 64, activation='relu')
-convnet = tflearn.max_pool_2d(convnet, 2,2)
-convnet = tflearn.dropout(convnet, 0.5)
+#convnet = tflearn.conv_2d(convnet, 128, 128, activation='relu')
+#convnet = tflearn.conv_2d(convnet, 64, 64, activation='relu')
+#convnet = tflearn.max_pool_2d(convnet, 2,2)
+#convnet = tflearn.dropout(convnet, 0.5)
 
-convnet = tflearn.conv_2d(convnet, 128, 128, activation='relu')
-convnet = tflearn.conv_2d(convnet, 64, 64, activation='relu')
-convnet = tflearn.max_pool_2d(convnet, 2, 2)
-convnet = tflearn.dropout(convnet, 0.5)
+#convnet = tflearn.conv_2d(convnet, 128, 128, activation='relu')
+#convnet = tflearn.conv_2d(convnet, 64, 64, activation='relu')
+#convnet = tflearn.max_pool_2d(convnet, 2, 2,)
+#convnet = tflearn.dropout(convnet, 0.5)
 
 
 convnet = tflearn.fully_connected(convnet, 2, activation='softmax')
-convnet = tflearn.regression(convnet, optimizer='adam',  loss='categorical_crossentropy', name='targets')
+convnet = tflearn.regression(convnet, optimizer='adam', loss='categorical_crossentropy',
+                             name='targets')
 
 
 model = tflearn.DNN(convnet, tensorboard_verbose=0)
 try:
-    if len(os.listdir("model/"))>0 :
+    if len(os.listdir("model/")) > 0:
         model.load("model/snore")
 except:
     print("NO DATA")
 
 
-for i in range(300) :
+for i in range(300):
     X, Y = next(batch)
     Xtest, Ytest = next(testbatch)
 
-    res = model.fit(X ,Y ,validation_set=(Xtest,Ytest) ,n_epoch=50 ,show_metric=True)
+    res = model.fit(X, Y, validation_set=(Xtest, Ytest),
+                    n_epoch=50, show_metric=True)
 
     nr1 = validateWav("nosnore1.wav")
     nr2 = validateWav("nosnore2.wav")
@@ -74,6 +81,3 @@ for i in range(300) :
     r4 = validateWav("snore4.wav")
 
     model.save("model/snore")
-
-    
-
