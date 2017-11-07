@@ -40,6 +40,17 @@ convnet = tflearn.conv_2d(convnet, 32, 3 , activation='relu')
 convnet = tflearn.max_pool_2d(convnet, 2)
 convnet = tflearn.dropout(convnet, 0.50)
 
+convnet = tflearn.conv_2d(convnet, 64, 3, activation='relu')
+convnet = tflearn.conv_2d(convnet, 32, 3 , activation='relu')
+convnet = tflearn.max_pool_2d(convnet, 2)
+convnet = tflearn.dropout(convnet, 0.50)
+
+convnet = tflearn.conv_2d(convnet, 64, 3, activation='relu')
+convnet = tflearn.conv_2d(convnet, 32, 3 , activation='relu')
+convnet = tflearn.max_pool_2d(convnet, 2)
+convnet = tflearn.dropout(convnet, 0.50)
+
+
 convnet = tflearn.fully_connected(convnet, 256, activation='tanh')
 convnet = tflearn.fully_connected(convnet, 2, activation='softmax')
 convnet = tflearn.regression(convnet, optimizer='adam', loss='categorical_crossentropy',
@@ -61,10 +72,10 @@ for i in range(300):
     res = model.fit(X, Y, validation_set=(Xtest, Ytest),
                     n_epoch=25, show_metric=True)
 
-    nr1 = validateWav("nosnore1.wav")
-    nr2 = validateWav("nosnore2.wav")
-    nr3 = validateWav("nosnore3.wav")
-    nr4 = validateWav("nosnore4.wav")
+    # nr1 = validateWav("nosnore1.wav")
+    # nr2 = validateWav("nosnore2.wav")
+    # nr3 = validateWav("nosnore3.wav")
+    # nr4 = validateWav("nosnore4.wav")
 
     r1 = validateWav("snore1.wav")
     r2 = validateWav("snore2.wav")

@@ -1,0 +1,2 @@
+model_checkpoint_path: "C:\\tensorflow-speech-recognition\\model\\snore"
+all_model_checkpoint_paths: "C:\\tensorflow-speech-recognition\\model\\snore"
